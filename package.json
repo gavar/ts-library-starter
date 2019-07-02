@@ -19,8 +19,9 @@
     "node": ">=6.0.0"
   },
   "scripts": {
+    "clean": "rimraf dist",
     "lint": "tslint -p tsconfig.json -t codeFrame",
-    "prebuild": "rimraf dist",
+    "prebuild": "yarn clean",
     "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "rollup -c rollup.config.ts -w",
     "test": "jest --coverage",
