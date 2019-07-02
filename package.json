@@ -21,7 +21,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "prettier": "prettier **/*.{js,ts,json,yml,md}",
-    "lint": "tslint -p tsconfig.json -t codeFrame",
+    "lint": "eslint **/*.{js,ts}",
     "prebuild": "yarn clean",
     "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "rollup -c rollup.config.ts -w",
