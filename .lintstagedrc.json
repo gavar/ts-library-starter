@@ -1,0 +1,4 @@
+{
+  "*.{js,ts,json,md}": "prettier --check",
+  "*.{js,ts}": "tslint -p tsconfig.json -t stylish"
+}
