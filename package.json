@@ -41,14 +41,9 @@
       "path": "node_modules/cz-conventional-changelog"
     }
   },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
   "devDependencies": {
-    "@commitlint/cli": "^7.1.2",
-    "@commitlint/config-conventional": "^7.1.2",
+    "@commitlint/cli": "^8.0.0",
+    "@commitlint/config-conventional": "^8.0.0",
     "@types/jest": "^23.3.2",
     "@types/lodash-es": "^4.17.3",
     "@types/node": "^12.0.10",
