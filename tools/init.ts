@@ -1,13 +1,13 @@
 /**
  * This script runs automatically after your first npm-install.
  */
-const _prompt = require("prompt");
-const { mv, rm, which, exec } = require("shelljs");
-const replace = require("replace-in-file");
-const colors = require("colors");
-const path = require("path");
-const { readFileSync, writeFileSync } = require("fs");
-const { fork } = require("child_process");
+import { fork } from "child_process";
+import colors from "colors";
+import { readFileSync, writeFileSync } from "fs";
+import path from "path";
+import _prompt from "prompt";
+import replace from "replace-in-file";
+import { exec, mv, rm, which } from "shelljs";
 
 // Note: These should all be relative to the project root directory
 const rmDirs = [".git"];
@@ -24,11 +24,16 @@ const renameFiles = [
   ["test/library.test.ts", "test/--libraryname--.test.ts"],
 ];
 
+interface PrompProps {
+  library: string;
+  useSuggestedName: string;
+}
+
 const _promptSchemaLibraryName = {
   properties: {
     library: {
       description: colors.cyan("What do you want the library to be called? (use kebab-case)"),
-      pattern: /^[a-z]+(\-[a-z]+)*$/,
+      pattern: /^[a-z]+(-[a-z]+)*$/,
       type: "string",
       required: true,
       message: '"kebab-case" uses lowercase letters, and hyphens for any punctuation',
@@ -79,8 +84,8 @@ if (process.env.CI == null) {
  * Asks the user for the name of the library if it has been cloned into the
  * default directory, or if they want a different name to the one suggested
  */
-function libraryNameCreate() {
-  _prompt.get(_promptSchemaLibraryName, (err: any, res: any) => {
+function libraryNameCreate(): void {
+  _prompt.get(_promptSchemaLibraryName, (err: unknown, res: PrompProps) => {
     if (err) {
       console.log(colors.red("Sorry, there was an error building the workspace :("));
       removeItems();
@@ -96,8 +101,8 @@ function libraryNameCreate() {
  * Sees if the users wants to accept the suggested library name if the project
  * has been cloned into a custom directory (i.e. it's not 'typescript-library-starter')
  */
-function libraryNameSuggestedAccept() {
-  _prompt.get(_promptSchemaLibrarySuggest, (err: any, res: any) => {
+function libraryNameSuggestedAccept(): void {
+  _prompt.get(_promptSchemaLibrarySuggest, (err: unknown, res: PrompProps) => {
     if (err) {
       console.log(colors.red("Sorry, you'll need to type the library name"));
       libraryNameCreate();
@@ -120,7 +125,7 @@ function libraryNameSuggestedAccept() {
  * Any leading or trailing dashes are then removed, before the string is
  * lowercased and returned
  */
-function libraryNameSuggested() {
+function libraryNameSuggested(): string {
   return path
     .basename(path.resolve(__dirname, ".."))
     .replace(/[^\w\d]|_/g, "-")
@@ -131,7 +136,7 @@ function libraryNameSuggested() {
 /**
  * Checks if the suggested library name is the default, which is 'typescript-library-starter'
  */
-function libraryNameSuggestedIsDefault() {
+function libraryNameSuggestedIsDefault(): boolean {
   if (libraryNameSuggested() === "typescript-library-starter") {
     return true;
   }
@@ -144,12 +149,12 @@ function libraryNameSuggestedIsDefault() {
  *
  * @param libraryName
  */
-function setupLibrary(libraryName: string) {
+function setupLibrary(libraryName: string): void {
   console.log(colors.cyan("\nThanks for the info. The last few changes are being made... hang tight!\n\n"));
 
   // Get the Git username and email before the .git directory is removed
-  let username = exec("git config user.name").stdout.trim();
-  let usermail = exec("git config user.email").stdout.trim();
+  const username = exec("git config user.name").stdout.trim();
+  const usermail = exec("git config user.email").stdout.trim();
 
   removeItems();
 
@@ -165,12 +170,12 @@ function setupLibrary(libraryName: string) {
 /**
  * Removes items from the project that aren't needed after the initial setup
  */
-function removeItems() {
+function removeItems(): void {
   console.log(colors.underline.white("Removed"));
 
   // The directories and files are combined here, to simplify the function,
   // as the 'rm' command checks the item type before attempting to remove it
-  let rmItems = rmDirs.concat(rmFiles);
+  const rmItems = rmDirs.concat(rmFiles);
   rm("-rf", rmItems.map(f => path.resolve(__dirname, "..", f)));
   console.log(colors.red(rmItems.join("\n")));
 
@@ -184,12 +189,12 @@ function removeItems() {
  * @param username
  * @param usermail
  */
-function modifyContents(libraryName: string, username: string, usermail: string) {
+function modifyContents(libraryName: string, username: string, usermail: string): void {
   console.log(colors.underline.white("Modified"));
 
-  let files = modifyFiles.map(f => path.resolve(__dirname, "..", f));
+  const files = modifyFiles.map(f => path.resolve(__dirname, "..", f));
   try {
-    const changes = replace.sync({
+    replace.sync({
       files,
       from: [/--libraryname--/g, /--username--/g, /--usermail--/g],
       to: [libraryName, username, usermail],
@@ -207,13 +212,13 @@ function modifyContents(libraryName: string, username: string, usermail: string)
  *
  * @param libraryName
  */
-function renameItems(libraryName: string) {
+function renameItems(libraryName: string): void {
   console.log(colors.underline.white("Renamed"));
 
   renameFiles.forEach(function(files) {
     // Files[0] is the current filename
     // Files[1] is the new name
-    let newFilename = files[1].replace(/--libraryname--/g, libraryName);
+    const newFilename = files[1].replace(/--libraryname--/g, libraryName);
     mv(path.resolve(__dirname, "..", files[0]), path.resolve(__dirname, "..", newFilename));
     console.log(colors.cyan(files[0] + " => " + newFilename));
   });
@@ -224,27 +229,28 @@ function renameItems(libraryName: string) {
 /**
  * Calls any external programs to finish setting up the library
  */
-function finalize() {
+function finalize(): void {
   console.log(colors.underline.white("Finalizing"));
 
   // Recreate Git folder
-  let gitInitOutput = exec('git init "' + path.resolve(__dirname, "..") + '"', {
+  const gitInitOutput = exec('git init "' + path.resolve(__dirname, "..") + '"', {
     silent: true,
   }).stdout;
   console.log(colors.green(gitInitOutput.replace(/(\n|\r)+/g, "")));
 
   // Remove post-install command
-  let jsonPackage = path.resolve(__dirname, "..", "package.json");
-  const pkg = JSON.parse(readFileSync(jsonPackage) as any);
+  const pkgPath = path.resolve("../package.json");
+  const pkg = JSON.parse(readFileSync(pkgPath).toString());
 
   // Note: Add items to remove from the package file here
   delete pkg.scripts.postinstall;
 
-  writeFileSync(jsonPackage, JSON.stringify(pkg, null, 2));
+  writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
   console.log(colors.green("Postinstall script has been removed"));
 
   // Initialize Husky
-  fork(path.resolve(__dirname, "..", "node_modules", "husky", "bin", "install"), { silent: true });
+  const husky = path.resolve("../node_modules/husky");
+  fork(husky, ["install"]);
   console.log(colors.green("Git hooks set up"));
 
   console.log("\n");

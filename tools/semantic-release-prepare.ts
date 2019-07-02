@@ -1,14 +1,15 @@
-const path = require("path");
-const { fork } = require("child_process");
-const colors = require("colors");
+import { fork } from "child_process";
+import colors from "colors";
+import { readFileSync, writeFileSync } from "fs";
+import path from "path";
 
-const { readFileSync, writeFileSync } = require("fs");
-const pkg = JSON.parse(readFileSync(path.resolve(__dirname, "..", "package.json")));
+const pkgPath = path.resolve("../package.json");
+const pkg = JSON.parse(readFileSync(pkgPath).toString());
 
 pkg.scripts.prepush = "npm run test:prod && npm run build";
 pkg.scripts.commitmsg = "commitlint -E HUSKY_GIT_PARAMS";
 
-writeFileSync(path.resolve(__dirname, "..", "package.json"), JSON.stringify(pkg, null, 2));
+writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 
 // Call husky to set up the hooks
 fork(path.resolve(__dirname, "..", "node_modules", "husky", "lib", "installer", "bin"), ["install"]);
