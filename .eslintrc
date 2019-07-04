@@ -11,6 +11,9 @@
   ],
   "extends": [
     "eslint:recommended",
+    "plugin:import/errors", // eslint-plugin-import
+    "plugin:import/warnings", // eslint-plugin-import
+    "plugin:import/typescript", // eslint-plugin-import
     "plugin:@typescript-eslint/eslint-recommended", // `@typescript-eslint/eslint-plugin`
     "plugin:@typescript-eslint/recommended", // `@typescript-eslint/eslint-plugin`
     "plugin:prettier/recommended", // `eslint-plugin-prettier`
@@ -20,8 +23,11 @@
     "node": true
   },
   "rules": {
-    "@typescript-eslint/no-use-before-define": ["error", { "functions": false }],
     "@typescript-eslint/explicit-function-return-type": ["warn", { "allowExpressions": true }],
-    "@typescript-eslint/no-explicit-any": ["warn", { "fixToUnknown": true, "ignoreRestArgs": true }]
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-use-before-define": ["error", { "functions": false }],
+    "import/order": "error",
+    "no-inner-declarations": "off"
   }
 }
