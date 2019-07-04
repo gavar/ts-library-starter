@@ -1,6 +1,6 @@
 {
   "endOfLine": "lf",
-  "printWidth": 120,
+  "printWidth": 100,
   "trailingComma": "all",
   "overrides": [
     {
