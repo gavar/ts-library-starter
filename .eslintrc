@@ -6,19 +6,24 @@
     "project": "tsconfig.json"
   },
   "plugins": [
+    "import", // `eslint-plugin-import`
     "prettier", // `eslint-plugin-prettier`
     "@typescript-eslint/eslint-plugin"
   ],
   "extends": [
     "eslint:recommended",
-    "plugin:import/errors", // eslint-plugin-import
-    "plugin:import/warnings", // eslint-plugin-import
-    "plugin:import/typescript", // eslint-plugin-import
     "plugin:@typescript-eslint/eslint-recommended", // `@typescript-eslint/eslint-plugin`
     "plugin:@typescript-eslint/recommended", // `@typescript-eslint/eslint-plugin`
     "plugin:prettier/recommended", // `eslint-plugin-prettier`
     "prettier/@typescript-eslint" // `eslint-config-prettier`
   ],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".ts", ".d.ts", ".js"]
+      }
+    }
+  },
   "env": {
     "node": true
   },
@@ -27,6 +32,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/no-use-before-define": ["error", { "functions": false }],
+    "import/export": "error",
     "import/order": "error",
     "no-inner-declarations": "off"
   }
